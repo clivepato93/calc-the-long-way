@@ -3,57 +3,85 @@
 // ignore space
 // collect parantheses
 // 4 - 2
+
+
+function generateToken(currToken) {
+  if (currToken.length ==1) {
+    return currToken[0];
+  }
+  let negativeOp = 0;
+  let finalOutput = [];
+  for (let j = 0; j < currToken.length; j++) {
+    if (currToken[j] == "-") {
+      negativeOp++;
+    } else if(/\d/.test(currToken[j])) {
+      finalOutput.push(currToken[j]);
+    }
+  }
+  if (negativeOp % 2) {
+    finalOutput = "-" + finalOutput.join("");
+  } else {
+    finalOutput = finalOutput.join("");
+  }
+  return finalOutput;
+}
+
 function tokeniser(expr) {
-  operations = new Set("-", "+", "/", "*");
-  
-  expr = expr + " ";
   let tokens = [];
-  let currToken = [];
+let currToken = [];
   for (let i = 0; i < expr.length; i++) {
-    if (expr[i] == "(" || expr[i] == ")") {
-      if(currToken.length){
-
-        tokens.push(currToken.join(""));
+    if (/[/*()]/.test(expr[i])) {
+      if (currToken.length) {
+        tokens.push(generateToken(currToken));
         currToken.length = 0;
-    }
-      currToken.push(expr[i]);
-      tokens.push(currToken.join(""));
-       currToken.length = 0;
-    }
-    
-    else if (/\d/.test(expr[i])) {
-      currToken.push(expr[i]);
-    } 
-    
-    else if (/ /.test(expr[i])) {
-    if(currToken.length){
-
-        tokens.push(currToken.join(""));
-        currToken.length = 0;
-    }
-    } 
-    // operations.has(expr[i])
-    else if (/[+-/*]/.test(expr[i])) {
-    if(expr[i] == '-' && tokens.length==0 || /[+-/*(]/.test(tokens[tokens.length-1])){
-        currToken.push(expr[i])
-    }
-    else if(currToken.length){
-
-        tokens.push(currToken.join(""));
-        currToken.length = 0;
-    }
-    else{
-
         currToken.push(expr[i]);
-        tokens.push(currToken.join(""));
+        tokens.push(generateToken(currToken));
         currToken.length = 0;
+      }
+      else{
+        currToken.push(expr[i]);
+        tokens.push(generateToken(currToken));
+        currToken.length = 0;
+      }
     }
+
+    else{
+      let lastToken = tokens[tokens.length-1]
+      if(tokens.length && /\d/.test(lastToken[lastToken.length-1])  && /[-+]/.test(expr[i])){
+        currToken.push(expr[i])
+        tokens.push(generateToken(currToken));
+        currToken.length = 0;
+      }
+
+      if(/\d/.test(currToken[currToken.length-1]) && /[-+]/.test(expr[i])){
+        tokens.push(generateToken(currToken));
+        currToken.length = 0;
+        currToken.push(expr[i])
+        tokens.push(generateToken(currToken));
+        currToken.length = 0;
+      }
+
+      else if(expr[i]!=' '){
+        currToken.push(expr[i])
+      }
     }
+    //
+
+    
+  }
+  if (currToken.length) {
+    tokens.push(generateToken(currToken));
+        currToken.length = 0;
   }
   return tokens;
 }
- console.log(tokeniser("-2 -(-5)"))
- console.log(tokeniser("4 * -2"))
-// console.log(tokeniser('4 - 2'))
+console.log(tokeniser("-(-3)"));
+console.log(tokeniser("-2 -(-5)"));
+console.log(tokeniser("4 * -2"));
+console.log(tokeniser('4 - 2'))
 console.log(tokeniser("+"));
-//  console.log(tokeniser('41 + ( 98+9) - 2'))
+ console.log(tokeniser('41 + ( 98+9) - 2'))
+
+ console.log(tokeniser("4 + ---3"))
+
+  console.log(tokeniser("-4 + (10 - ---2) * --3"))
