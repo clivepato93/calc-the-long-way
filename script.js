@@ -5,7 +5,7 @@
 // 4 - 2
 
 function generateToken(currToken) {
-  if (currToken.length ==1) {
+  if (currToken.length == 1) {
     return currToken[0];
   }
   let negativeOp = 0;
@@ -13,7 +13,7 @@ function generateToken(currToken) {
   for (let j = 0; j < currToken.length; j++) {
     if (currToken[j] == "-") {
       negativeOp++;
-    } else if(/\d/.test(currToken[j])) {
+    } else if (/\d/.test(currToken[j])) {
       finalOutput.push(currToken[j]);
     }
   }
@@ -27,53 +27,121 @@ function generateToken(currToken) {
 
 function tokeniser(expr) {
   let tokens = [];
-  let value = true;
-  let currToken = []
-  for (let i = 0; i < expr.length; i++) {
-    if (value) {
-      if(/\d/.test(expr[i])){
-        currToken.push(expr[i])
-      }
-      else{
-        if(/[-+]/.test(expr[i]) && (currToken.length ==0 || /[-+]/.test(currToken[currToken.length-1]))){
-                  currToken.push(expr[i])
-        }
-        else if(/[-+/*()]/.test(expr[i])){
-          if(currToken.length){
-            tokens.push(generateToken(currToken))
-            currToken.length = 0
-          }
-            value = false
-        }
-      }
-    } if(value == false) {
-      if(/[-+/*(]/.test(expr[i])){
-        tokens.push(generateToken(expr[i]))
-       value = true 
-      }
-      if(/[)]/.test(expr[i])){
-        tokens.push(generateToken(expr[i]))
+  let currToken = [];
+  let unary = true;
 
+  for (let i = 0; i < expr.length; i++) {
+    if (/\d/.test(expr[i])) {
+      unary = false;
+      currToken.push(expr[i]);
+    } else if (/[+-]/.test(expr[i])) {
+      if (unary) {
+        currToken.push(expr[i]);
+      } else {
+        if (currToken.length) {
+          tokens.push(generateToken(currToken));
+          currToken.length = 0;
+        }
+
+        tokens.push(generateToken(expr[i]));
+        unary = true;
       }
-      else if(/\d/.test(expr[i])){
-        currToken.push(expr[i])
-        value = true
+    } else if (/[/*() ]/.test(expr[i])) {
+      if (" " == expr[i] && /\d/.test(currToken[currToken.length - 1])) {
+        tokens.push(generateToken(currToken));
+        currToken.length = 0;
+        unary = false;
+      }
+
+      if (/[/*(]/.test(expr[i])) {
+        if (currToken.length) {
+          tokens.push(generateToken(currToken));
+          currToken.length = 0;
+        }
+        tokens.push(generateToken(expr[i]));
+        unary = true;
+      }
+      if (")"==expr[i]) {
+        if (currToken.length) {
+          tokens.push(generateToken(currToken));
+          currToken.length = 0;
+        }
+        tokens.push(generateToken(expr[i]));
+        unary = false;
       }
     }
   }
-  if(currToken.length){
-    tokens.push(generateToken(currToken))
-        currToken.length = 0
+
+  if (currToken.length) {
+    tokens.push(generateToken(currToken));
+    currToken.length = 0;
   }
   return tokens;
 }
+
+// console.log(tokeniser("9)-3"));
+// console.log(tokeniser("-3 12"));
 // console.log(tokeniser("-(-3)"));
 // console.log(tokeniser("-2 -(-5)"));
+// console.log(tokeniser("-(3+2)"));
+// console.log(tokeniser("  -   3"));
 // console.log(tokeniser("4 * -2"));
 // console.log(tokeniser("4 - 2"));
 // console.log(tokeniser("+"));
-console.log(tokeniser("41 + ( 98+9) - 2"));
+// console.log(tokeniser("41 + ( 98+9) - 2"));
 
 // console.log(tokeniser("4 + ---3"));
 
 // console.log(tokeniser("-4 + (10 - ---2) * --3"));
+
+// console.log(tokeniser("-   3"));
+// console.log(tokeniser("( - ( - ( -3 ) ) )"));
+
+console.log(tokeniser("-3"));
+console.log(tokeniser("- 3"));
+console.log(tokeniser("-   3"));
+console.log(tokeniser("--3"));
+console.log(tokeniser("- -3"));
+console.log(tokeniser("- - 3"));
+console.log(tokeniser("+3"));
+console.log(tokeniser("+ +3"));
+console.log(tokeniser("-+-3"));
+
+console.log(tokeniser("4+-3"));
+console.log(tokeniser("4 + -3"));
+console.log(tokeniser("4 - -3"));
+console.log(tokeniser("4--3"));
+console.log(tokeniser("4 -+-3"));
+
+console.log(tokeniser("(-3)"));
+console.log(tokeniser("( -3 )"));
+console.log(tokeniser("( - 3 )"));
+console.log(tokeniser("-(3)"));
+console.log(tokeniser("- (3)"));
+console.log(tokeniser("-( 3 )"));
+
+console.log(tokeniser("(1 + (2 * -3))"));
+console.log(tokeniser("(((-3)))"));
+console.log(tokeniser("( - ( - ( -3 ) ) )"));
+
+console.log(tokeniser("3*4"));
+console.log(tokeniser("3 *4"));
+console.log(tokeniser("3* 4"));
+console.log(tokeniser("3 *  4"));
+console.log(tokeniser("3/ -2"));
+console.log(tokeniser("3/-2"));
+
+console.log(tokeniser("   3"));
+console.log(tokeniser("3   "));
+console.log(tokeniser("   3 +    4   "));
+console.log(tokeniser("   -   5"));
+
+console.log(tokeniser("3 4"));
+console.log(tokeniser("(3)4"));
+console.log(tokeniser("4(3)"));
+console.log(tokeniser("+*3"));
+console.log(tokeniser("*/3"));
+
+console.log(tokeniser("-  3"));
+console.log(tokeniser("4 +  -   2"));
+console.log(tokeniser("(  -  5 )"));
