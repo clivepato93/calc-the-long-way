@@ -87,6 +87,10 @@ function parser(tokens){
       if(element=='('){
         stack.push(')')
       }
+
+      else if("-"== element || "+"== element){
+        continue
+      }
       else if(/\d/.test(element)){
         expectedValue = false
       }
@@ -113,11 +117,11 @@ function parser(tokens){
       }
     }
   }
-  return stack.length ==0
+  return expectedValue== false && stack.length ==0
 }
 
-// console.log(parser(tokeniser("9)-3")));
-// console.log(parser(tokeniser("-3 12")));
+// console.log(tokeniser("9)-3"));
+// console.log(tokeniser("-3 12"));
 // console.log(tokeniser("-(-3)"));
 // console.log(tokeniser("-2 -(-5)"));
 // console.log(tokeniser("-(3+2)"));
@@ -133,6 +137,7 @@ function parser(tokens){
 
 // console.log(tokeniser("-   3"));
 // console.log(tokeniser("( - ( - ( -3 ) ) )"));
+// console.log(parser(tokeniser("( - ( - ( -3 ) ) )")));
 
 // console.log(tokeniser("-3"));
 // console.log(tokeniser("- 3"));
@@ -182,3 +187,52 @@ function parser(tokens){
 // console.log(tokeniser("-  3"));
 // console.log(tokeniser("4 +  -   2"));
 // console.log(tokeniser("(  -  5 )"));
+
+// console.log(parser(tokeniser("-3")));
+// console.log(parser(tokeniser("- 3")));
+// console.log(parser(tokeniser("-   3")));
+// console.log(parser(tokeniser("--3")));
+// console.log(parser(tokeniser("- -3")));
+// console.log(parser(tokeniser("- - 3")));
+// console.log(parser(tokeniser("+3")));
+// console.log(parser(tokeniser("+ +3")));
+// console.log(parser(tokeniser("-+-3")));
+
+// console.log(parser(tokeniser("4+-3")));
+// console.log(parser(tokeniser("4 + -3")));
+// console.log(parser(tokeniser("4 - -3")));
+// console.log(parser(tokeniser("4--3")));
+// console.log(parser(tokeniser("4 -+-3")));
+
+// console.log(parser(tokeniser("(-3)")));
+// console.log(parser(tokeniser("( -3 )")));
+// console.log(parser(tokeniser("( - 3 )")));
+// console.log(parser(tokeniser("-(3)")));
+// console.log(parser(tokeniser("- (3)")));
+// console.log(parser(tokeniser("-( 3 )")));
+
+// console.log(parser(tokeniser("(1 + (2 * -3))")));
+// console.log(parser(tokeniser("(((-3)))")));
+// console.log(parser(tokeniser("( - ( - ( -3 ) ) )")));
+
+// console.log(parser(tokeniser("3*4")));
+// console.log(parser(tokeniser("3 *4")));
+// console.log(parser(tokeniser("3* 4")));
+// console.log(parser(tokeniser("3 *  4")));
+// console.log(parser(tokeniser("3/ -2")));
+// console.log(parser(tokeniser("3/-2")));
+
+// console.log(parser(tokeniser("   3")));
+// console.log(parser(tokeniser("3   ")));
+// console.log(parser(tokeniser("   3 +    4   ")));
+// console.log(parser(tokeniser("   -   5")));
+
+// console.log(parser(tokeniser("3 4")));
+// console.log(parser(tokeniser("(3)4")));
+// console.log(parser(tokeniser("4(3)")));
+// console.log(parser(tokeniser("+*3")));
+// console.log(parser(tokeniser("*/3")));
+
+// console.log(parser(tokeniser("-  3")));
+// console.log(parser(tokeniser("4 +  -   2")));
+// console.log(parser(tokeniser("(  -  5 )")));
