@@ -136,9 +136,6 @@ function evaluate(tokens){
             operators.push('*')
           }
 
-           else if(tokens[i]=="("){
-            operators.push(tokens[i])
-          }
           else if(precende[tokens[i]] && precende[tokens[i]]<= precende[operators[operators.length-1]]){
             while(precende[tokens[i]]<= precende[operators[operators.length-1]]){
               const currentOp = operators.pop()
@@ -338,8 +335,14 @@ function evaluate(tokens){
 // console.log(evaluate(tokeniser("(12/( (2+1) * -(1+1) ))"))); // -2
 // console.log(evaluate(tokeniser("( ( ( 9 ) ) / 3 )")));     // 3
 
-console.log(evaluate(tokeniser("-(3+4)")));              // -7
-console.log(evaluate(tokeniser("(10/(2+3))")));          // 2
-console.log(evaluate(tokeniser("((8/2)+3)")));           // 7
-console.log(evaluate(tokeniser("-(6/(3+1))")));           // -1.5
-console.log(evaluate(tokeniser("(20/( (2+3) * 2 ))")));   // 2
+// console.log(evaluate(tokeniser("-(3+4)")));              // -7
+// console.log(evaluate(tokeniser("(10/(2+3))")));          // 2
+// console.log(evaluate(tokeniser("((8/2)+3)")));           // 7
+// console.log(evaluate(tokeniser("-(6/(3+1))")));           // -1.5
+// console.log(evaluate(tokeniser("(20/( (2+3) * 2 ))")));   // 2
+
+// console.log(evaluate(tokeniser("5 - (3+2)")));        // ❌ likely incorrect
+// console.log(evaluate(tokeniser("10 - (2*3)")));       // ❌ likely incorrect
+// console.log(evaluate(tokeniser("8 - (6/2)")));        // ❌ likely incorrect
+// console.log(evaluate(tokeniser("7 - (2+3*2)")));      // ❌ likely incorrect
+// console.log(evaluate(tokeniser("20 - ( (2+3) * 2 )"))); // ❌ likely incorrect
