@@ -5,24 +5,25 @@
 // 4 - 2
 
 function generateToken(currToken) {
-  if (currToken.length == 1) {
-    return currToken[0];
-  }
+  
   let negativeOp = 0;
   let finalOutput = [];
+  let tokens = [];
   for (let j = 0; j < currToken.length; j++) {
     if (currToken[j] == "-") {
       negativeOp++;
-    } else if (/\d/.test(currToken[j])) {
+    } else if(/\d/.test(currToken[j])){
       finalOutput.push(currToken[j]);
     }
   }
   if (negativeOp % 2) {
-    finalOutput = "-" + finalOutput.join("");
-  } else {
-    finalOutput = finalOutput.join("");
+    tokens.push("-1");
+    tokens.push("*");
   }
-  return finalOutput;
+  if (finalOutput.length) {
+    tokens.push(finalOutput.join(""));
+  }
+  return tokens;
 }
 
 function tokeniser(expr) {
@@ -39,171 +40,170 @@ function tokeniser(expr) {
         currToken.push(expr[i]);
       } else {
         if (currToken.length) {
-          tokens.push(generateToken(currToken));
+          const newtokens = generateToken(currToken);
+          for (let token of newtokens) {
+            tokens.push(token);
+          }
           currToken.length = 0;
         }
 
-        tokens.push(generateToken(expr[i]));
+        tokens.push(expr[i]);
         unary = true;
       }
     } else if (/[/*() ]/.test(expr[i])) {
       if (" " == expr[i] && /\d/.test(currToken[currToken.length - 1])) {
-        tokens.push(generateToken(currToken));
+        const newtokens = generateToken(currToken);
+        for (let token of newtokens) {
+          tokens.push(token);
+        }
         currToken.length = 0;
         unary = false;
       }
 
       if (/[/*(]/.test(expr[i])) {
         if (currToken.length) {
-          tokens.push(generateToken(currToken));
+          const newtokens = generateToken(currToken);
+          for (let token of newtokens) {
+            tokens.push(token);
+          }
           currToken.length = 0;
         }
-        tokens.push(generateToken(expr[i]));
+        tokens.push(expr[i]);
         unary = true;
       }
-      if (")"==expr[i]) {
+      if (")" == expr[i]) {
         if (currToken.length) {
-          tokens.push(generateToken(currToken));
+          const newtokens = generateToken(currToken);
+          for (let token of newtokens) {
+            tokens.push(token);
+          }
           currToken.length = 0;
         }
-        tokens.push(generateToken(expr[i]));
+        tokens.push(expr[i]);
         unary = false;
       }
     }
   }
 
   if (currToken.length) {
-    tokens.push(generateToken(currToken));
+    const newtokens = generateToken(currToken);
+    for (let token of newtokens) {
+      tokens.push(token);
+    }
+
     currToken.length = 0;
   }
   return tokens;
 }
 
-function parser(tokens){
+function parser(tokens) {
   let expectedValue = true;
-  let stack = []
+  let stack = [];
   for (const element of tokens) {
-    if(expectedValue){
-      if(element=='('){
-        stack.push(')')
+    if (expectedValue) {
+      if (element == "(") {
+        stack.push(")");
+      } else if ("-" == element || "+" == element) {
+        continue;
+      } else if (/\d/.test(element)) {
+        expectedValue = false;
+      } else {
+        return false;
       }
-
-      else if("-"== element || "+"== element){
-        continue
-      }
-      else if(/\d/.test(element)){
-        expectedValue = false
-      }
-
-      else{
-        return false
-      }
-      
-    }
-    else{
-      if(element == ')'){
-        if(stack.length ==0){
-          return false
+    } else {
+      if (element == ")") {
+        if (stack.length == 0) {
+          return false;
+        } else {
+          stack.pop();
         }
-        else{
-          stack.pop()
-        }
-      }
-      else if(/[*/+-]/.test(element)){
-        expectedValue = true
-      }
-      else{
-        return false
+      } else if (/[*/+-]/.test(element)) {
+        expectedValue = true;
+      } else {
+        return false;
       }
     }
   }
-  return expectedValue== false && stack.length ==0
+  return expectedValue == false && stack.length == 0;
 }
 
-function evaluate(tokens){
-  const precende ={
-    '-':1,'+':1,'*':2,"/":2
-  }
-  let outputQueue = []
-  let operators = []
-  for(let i= 0 ; i< tokens.length;i++){
-        if (/\d/.test(tokens[i])) {
-          outputQueue.push(+tokens[i])
+function evaluate(tokens) {
+  const precende = {
+    "-": 1,
+    "+": 1,
+    "*": 2,
+    "/": 2,
+  };
+  let outputQueue = [];
+  let operators = [];
+  for (let i = 0; i < tokens.length; i++) {
+    if (/\d/.test(tokens[i])) {
+      outputQueue.push(+tokens[i]);
+    } else {
+      if (
+        precende[tokens[i]] &&
+        precende[tokens[i]] <= precende[operators[operators.length - 1]]
+      ) {
+        while (
+          precende[tokens[i]] <= precende[operators[operators.length - 1]]
+        ) {
+          const currentOp = operators.pop();
+          if (precende[currentOp]) {
+            outputQueue.push(currentOp);
+          }
         }
-        else{
-          if(tokens[i]=='-' && tokens[i+1]=='('){
-            outputQueue.push(-1)
-            operators.push('*')
+        operators.push(tokens[i]);
+      } else if (tokens[i] == ")") {
+        while (true) {
+          const currentOp = operators.pop();
+          if (currentOp == "(") {
+            break;
           }
-
-          else if(precende[tokens[i]] && precende[tokens[i]]<= precende[operators[operators.length-1]]){
-            while(precende[tokens[i]]<= precende[operators[operators.length-1]]){
-              const currentOp = operators.pop()
-              if(precende[currentOp]){
-
-                outputQueue.push(currentOp)
-              }
-
-            }
-            operators.push(tokens[i])
+          if (precende[currentOp]) {
+            outputQueue.push(currentOp);
           }
-          else if(tokens[i] ==')'){
-            while(true){
-              const currentOp = operators.pop()
-              if(currentOp=='('){
-                break
-              }
-              if(precende[currentOp]){
-
-                outputQueue.push(currentOp)
-              }
-            }
-        
-          }
-          else{
-            operators.push(tokens[i])
-          }
-
-          
         }
+      } else {
+        operators.push(tokens[i]);
+      }
+    }
   }
-  if(operators.length){
-     while(operators.length){
-              const currentOp = operators.pop()
-              if(precende[currentOp]){
-
-                outputQueue.push(currentOp)
-              }
-            }
+  if (operators.length) {
+    while (operators.length) {
+      const currentOp = operators.pop();
+      if (precende[currentOp]) {
+        outputQueue.push(currentOp);
+      }
+    }
   }
   // console.log(outputQueue)
-  let res = [outputQueue[0]]
+  let res = [outputQueue[0]];
   let i = 1;
-  while(i<outputQueue.length){
-    if(i<outputQueue.length && isNaN(outputQueue[i])== false){
-      res.push(outputQueue[i])
-    }
-    else{
-      if(res.length>=2){
-        const second = res.pop()
-        const first = res.pop()
-        const result = eval(`${first} ${outputQueue[i]} ${second}`)
-        res.push(+result)
-      }
-      else if(outputQueue[i]== "-"){
-        const first = res.pop()
-        const result = -first
-        res.push(result)
+  while (i < outputQueue.length) {
+    if (i < outputQueue.length && isNaN(outputQueue[i]) == false) {
+      res.push(outputQueue[i]);
+    } else {
+      if (res.length >= 2) {
+        const second = res.pop();
+        const first = res.pop();
+        const result = eval(`${first} ${outputQueue[i]} ${second}`);
+        res.push(+result);
+      } else if (outputQueue[i] == "-") {
+        const first = res.pop();
+        const result = -first;
+        res.push(result);
       }
     }
 
     i++;
   }
-  return res[0]
+  return res[0];
 }
 
-// console.log(evaluate(tokeniser("(1 + (2 * -3))")));
+console.log(evaluate(tokeniser("-+-3")));        // 3
+console.log(evaluate(tokeniser("--(3+2)")));     // 5
 
+// console.log(evaluate(tokeniser("(1 + (2 * -3))")));
 
 // console.log(tokeniser("9)-3"));
 // console.log(tokeniser("-3 12"));
@@ -305,7 +305,7 @@ function evaluate(tokens){
 
 // console.log(parser(tokeniser("(1 + (2 * -3))")));
 // console.log(parser(tokeniser("(((-3)))")));
-// console.log(parser(tokeniser("( - ( - ( -3 ) ) )")));
+console.log(parser(tokeniser("( - ( - ( -3 ) ) )")));
 
 // console.log(parser(tokeniser("3*4")));
 // console.log(parser(tokeniser("3 *4")));
@@ -333,7 +333,7 @@ function evaluate(tokens){
 // console.log(evaluate(tokeniser("-(6/(3-1))")));            // -3
 // console.log(evaluate(tokeniser("(8/(2*(1+1)))")));         // 2
 // console.log(evaluate(tokeniser("(12/( (2+1) * -(1+1) ))"))); // -2
-// console.log(evaluate(tokeniser("( ( ( 9 ) ) / 3 )")));     // 3
+console.log(evaluate(tokeniser("( ( ( 9 ) ) / 3 )")));     // 3
 
 // console.log(evaluate(tokeniser("-(3+4)")));              // -7
 // console.log(evaluate(tokeniser("(10/(2+3))")));          // 2
@@ -341,8 +341,15 @@ function evaluate(tokens){
 // console.log(evaluate(tokeniser("-(6/(3+1))")));           // -1.5
 // console.log(evaluate(tokeniser("(20/( (2+3) * 2 ))")));   // 2
 
-// console.log(evaluate(tokeniser("5 - (3+2)")));        // ❌ likely incorrect
-// console.log(evaluate(tokeniser("10 - (2*3)")));       // ❌ likely incorrect
-// console.log(evaluate(tokeniser("8 - (6/2)")));        // ❌ likely incorrect
-// console.log(evaluate(tokeniser("7 - (2+3*2)")));      // ❌ likely incorrect
-// console.log(evaluate(tokeniser("20 - ( (2+3) * 2 )"))); // ❌ likely incorrect
+// console.log(tokeniser("5 - (3+2)"));        // ❌ likely incorrect
+console.log(evaluate(tokeniser("10 - (2*3)")));       // ❌ likely incorrect
+console.log(evaluate(tokeniser("8 - (6/2)")));        // ❌ likely incorrect
+console.log(evaluate(tokeniser("7 - (2+3*2)")));      // ❌ likely incorrect
+console.log(evaluate(tokeniser("20 - ( (2+3) * 2 )"))); // ❌ likely incorrect
+
+// console.log(tokeniser("10 - (2*3)"));
+// console.log(tokeniser("-(3+2)"));
+// console.log(tokeniser("4 * -(3+2)"));
+// console.log(tokeniser("-(2+3) * 4"));
+// console.log(tokeniser("-(2+(3*2))"));
+// console.log(tokeniser("10 / -(2+3)"));
