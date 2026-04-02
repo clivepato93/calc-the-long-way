@@ -36,7 +36,7 @@ function tokeniser(expr) {
       unary = false;
       currToken.push(expr[i]);
     } else if (/[+-]/.test(expr[i])) {
-      if (unary) {
+      if (unary && '-'== expr[i]) {
         currToken.push(expr[i]);
       } else {
         if (currToken.length) {
