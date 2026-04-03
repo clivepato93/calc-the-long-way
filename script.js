@@ -1,18 +1,11 @@
-// collect more than one digit
-// collect operators
-// ignore space
-// collect parantheses
-// 4 - 2
-
 function generateToken(currToken) {
-  
   let negativeOp = 0;
   let finalOutput = [];
   let tokens = [];
   for (let j = 0; j < currToken.length; j++) {
     if (currToken[j] == "-") {
       negativeOp++;
-    } else if(/\d/.test(currToken[j])){
+    } else if (/\d/.test(currToken[j])) {
       finalOutput.push(currToken[j]);
     }
   }
@@ -36,7 +29,10 @@ function tokeniser(expr) {
       unary = false;
       currToken.push(expr[i]);
     } else if (/[+-]/.test(expr[i])) {
-      if (unary && '-'== expr[i]) {
+      if (unary && "+" == expr[i]) {
+        continue;
+      }
+      if (unary && "-" == expr[i]) {
         currToken.push(expr[i]);
       } else {
         if (currToken.length) {
@@ -103,7 +99,7 @@ function parser(tokens) {
     if (expectedValue) {
       if (element == "(") {
         stack.push(")");
-      }else if (/\d/.test(element)) {
+      } else if (/\d/.test(element)) {
         expectedValue = false;
       } else {
         return false;
@@ -132,16 +128,29 @@ function evaluate(tokens) {
     "*": 2,
     "/": 2,
   };
+
+  const operations = {
+    "-": function (a, b) {
+      return a - b;
+    },
+    "+": function (a, b) {
+      return a + b;
+    },
+    "*": function (a, b) {
+      return a * b;
+    },
+    "/": function (a, b) {
+      return a / b;
+    },
+  };
+
   let outputQueue = [];
   let operators = [];
   for (let i = 0; i < tokens.length; i++) {
     if (/\d/.test(tokens[i])) {
       outputQueue.push(+tokens[i]);
     } else {
-      if (
-        precende[tokens[i]] &&
-        precende[tokens[i]] <= precende[operators[operators.length - 1]]
-      ) {
+      if (precende[tokens[i]] <= precende[operators[operators.length - 1]]) {
         while (
           precende[tokens[i]] <= precende[operators[operators.length - 1]]
         ) {
@@ -174,7 +183,6 @@ function evaluate(tokens) {
       }
     }
   }
-  // console.log(outputQueue)
   let res = [outputQueue[0]];
   let i = 1;
   while (i < outputQueue.length) {
@@ -184,11 +192,7 @@ function evaluate(tokens) {
       if (res.length >= 2) {
         const second = res.pop();
         const first = res.pop();
-        const result = eval(`${first} ${outputQueue[i]} ${second}`);
-        res.push(+result);
-      } else if (outputQueue[i] == "-") {
-        const first = res.pop();
-        const result = -first;
+        const result = operations[outputQueue[i]](first, second);
         res.push(result);
       }
     }
@@ -198,8 +202,8 @@ function evaluate(tokens) {
   return res[0];
 }
 
-console.log(evaluate(tokeniser("-+-3")));        // 3
-console.log(evaluate(tokeniser("--(3+2)")));     // 5
+// console.log(evaluate(tokeniser("-+-3")));        // 3
+// console.log(evaluate(tokeniser("--(3+2)")));     // 5
 
 // console.log(evaluate(tokeniser("(1 + (2 * -3))")));
 
@@ -211,10 +215,10 @@ console.log(evaluate(tokeniser("--(3+2)")));     // 5
 // console.log(tokeniser("-2 -(-5)"));
 // console.log(tokeniser("-(3+2)"));
 // console.log(tokeniser("  -   3"));
-// console.log(tokeniser("4 * -2"));
+// console.log(evaluate(tokeniser("4 * -2")));
 // console.log(tokeniser("4 - 2"));
 // console.log(tokeniser("+"));
-// console.log(tokeniser("41 + ( 98+9) - 2"));
+// console.log(evaluate(tokeniser("41 + ( 98+9) - 2")));
 // console.log(evaluate(tokeniser("41 + ( 98+9) - 2")));
 
 // console.log(tokeniser("4 + ---3"));
@@ -226,7 +230,7 @@ console.log(evaluate(tokeniser("--(3+2)")));     // 5
 // console.log(parser(tokeniser("( - ( - ( -3 ) ) )")));
 
 // console.log(tokeniser("-3"));
-// console.log(tokeniser("- 3"));
+// console.log(evaluate(tokeniser("- 3")));
 // console.log(tokeniser("-   3"));
 // console.log(tokeniser("--3"));
 // console.log(tokeniser("- -3"));
@@ -303,7 +307,7 @@ console.log(evaluate(tokeniser("--(3+2)")));     // 5
 
 // console.log(parser(tokeniser("(1 + (2 * -3))")));
 // console.log(parser(tokeniser("(((-3)))")));
-console.log(parser(tokeniser("( - ( - ( -3 ) ) )")));
+// console.log(parser(tokeniser("( - ( - ( -3 ) ) )")));
 
 // console.log(parser(tokeniser("3*4")));
 // console.log(parser(tokeniser("3 *4")));
@@ -331,7 +335,7 @@ console.log(parser(tokeniser("( - ( - ( -3 ) ) )")));
 // console.log(evaluate(tokeniser("-(6/(3-1))")));            // -3
 // console.log(evaluate(tokeniser("(8/(2*(1+1)))")));         // 2
 // console.log(evaluate(tokeniser("(12/( (2+1) * -(1+1) ))"))); // -2
-console.log(evaluate(tokeniser("( ( ( 9 ) ) / 3 )")));     // 3
+// console.log(evaluate(tokeniser("( ( ( 9 ) ) / 3 )")));     // 3
 
 // console.log(evaluate(tokeniser("-(3+4)")));              // -7
 // console.log(evaluate(tokeniser("(10/(2+3))")));          // 2
@@ -340,10 +344,10 @@ console.log(evaluate(tokeniser("( ( ( 9 ) ) / 3 )")));     // 3
 // console.log(evaluate(tokeniser("(20/( (2+3) * 2 ))")));   // 2
 
 // console.log(tokeniser("5 - (3+2)"));        // ❌ likely incorrect
-console.log(evaluate(tokeniser("10 - (2*3)")));       // ❌ likely incorrect
-console.log(evaluate(tokeniser("8 - (6/2)")));        // ❌ likely incorrect
-console.log(evaluate(tokeniser("7 - (2+3*2)")));      // ❌ likely incorrect
-console.log(evaluate(tokeniser("20 - ( (2+3) * 2 )"))); // ❌ likely incorrect
+// console.log(evaluate(tokeniser("10 - (2*3)")));       // ❌ likely incorrect
+// console.log(evaluate(tokeniser("8 - (6/2)")));        // ❌ likely incorrect
+// console.log(evaluate(tokeniser("7 - (2+3*2)")));      // ❌ likely incorrect
+// console.log(evaluate(tokeniser("20 - ( (2+3) * 2 )"))); // ❌ likely incorrect
 
 // console.log(tokeniser("10 - (2*3)"));
 // console.log(tokeniser("-(3+2)"));
