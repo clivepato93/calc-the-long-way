@@ -17,11 +17,11 @@ function generateToken(currToken) {
     }
   }
   if (negativeOp % 2) {
-    tokens.push("-1");
+    tokens.push(-1);
     tokens.push("*");
   }
   if (finalOutput.length) {
-    tokens.push(finalOutput.join(""));
+    tokens.push(+finalOutput.join(""));
   }
   return tokens;
 }
@@ -103,9 +103,7 @@ function parser(tokens) {
     if (expectedValue) {
       if (element == "(") {
         stack.push(")");
-      } else if ("-" == element || "+" == element) {
-        continue;
-      } else if (/\d/.test(element)) {
+      }else if (/\d/.test(element)) {
         expectedValue = false;
       } else {
         return false;
