@@ -49,3 +49,43 @@ try {
 } catch (e) {
     console.log(e)
 }
+
+try {
+  let input = [
+ [
+  -1,  '*', '(', 6, '/',
+  '(', 3,   '-', 1, ')',
+  ')'
+],
+[
+  '(', 8,   '/', '(', 2,
+  '*', '(', 1,   '+', 1,
+  ')', ')', ')'
+],
+[
+  '(', 12, '/', '(', '(', 2,
+  '+', 1,  ')', '*', -1,  '*',
+  '(', 1,  '+', 1,   ')', ')',
+  ')'
+],
+[
+  '(', '(', '(', 9,
+  ')', ')', '/', 3,
+  ')'
+],[
+  '(', 20,  '/', '(', '(',
+  2,   '+', 3,   ')', '*',
+  2,   ')', ')'
+]
+  ];
+  let expected = [-3,2,-2,3,2]
+  input.forEach((expr,i)=>{
+    const res = evaluate(expr)
+    if(res != expected[i]){
+        throw new Error(`Result doesn't match expected: ${res} ${expected[i]}`);
+    }
+    console.log(`Evaluate test ${i+1} passed: ${res}`)
+  })
+} catch (e) {
+    console.log(e)
+}
