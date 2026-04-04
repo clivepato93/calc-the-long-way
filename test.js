@@ -21,7 +21,30 @@ try {
         }
         
     }
-    console.log(`Test ${i+1} passed: ${res}`)
+    console.log(`Tokeniser Test ${i+1} passed: ${res}`)
+  })
+} catch (e) {
+    console.log(e)
+}
+
+try {
+  let input = [
+    [],
+    ['('],
+    [')'],
+    ['(','(',')','(']
+    [1],
+    [-1, "*", "(", 3, ")"],
+    [3, "*", 4],
+    ["(", 1, "+", "(", 2, "*", -1, "*", 3, ")", ")"],
+  ];
+  let expected = [false,false,false,false,true,true,true,true]
+  input.forEach((expr,i)=>{
+    const res = parser(expr)
+    if(res != expected[i]){
+        throw new Error(`Result doesn't match expected: ${res} ${expected[i]}`);
+    }
+    console.log(`Parser test ${i+1} passed: ${res}`)
   })
 } catch (e) {
     console.log(e)
