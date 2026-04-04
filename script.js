@@ -147,10 +147,10 @@ function evaluate(tokens) {
   let outputQueue = [];
   let operators = [];
   for (let i = 0; i < tokens.length; i++) {
-    if (/\d/.test(tokens[i])) {
-      outputQueue.push(+tokens[i]);
+    if (typeof tokens[i] == 'number') {
+      outputQueue.push(tokens[i]);
     } else {
-      if (precende[tokens[i]] <= precende[operators[operators.length - 1]]) {
+      if (precende[tokens[i]]) {
         while (
           precende[tokens[i]] <= precende[operators[operators.length - 1]]
         ) {
@@ -193,6 +193,7 @@ function evaluate(tokens) {
         const second = res.pop();
         const first = res.pop();
         const result = operations[outputQueue[i]](first, second);
+        if(res == -Infinity || res== Infinity) return `Unable to return return due to the value being: ${res}`
         res.push(result);
       }
     }
@@ -202,17 +203,37 @@ function evaluate(tokens) {
   return res[0];
 }
 
-// console.log(evaluate(tokeniser("-+-3")));        // 3
-// console.log(evaluate(tokeniser("--(3+2)")));     // 5
+console.log(process.argv)
 
-// console.log(evaluate(tokeniser("(1 + (2 * -3))")));
+if (process.argv.length <3) {
+  throw new Error('Please enter more arguments when calling the script usage:\nnode script.js "Math Expression..." ...');
+} else {
+  let expression = []
+  process.argv.slice(2).forEach(function(arg, i) {
+    expression.push(arg)
+  });
+  let tokens = tokeniser(expression.join(''))
+
+  if(parser(tokens)){
+    console.log(`the result is: ${evaluate(tokens)}`)
+  }else{
+    throw new Error('Invalid expression please enter a valid expression')
+  }
+}
+
+export {tokeniser,parser,evaluate}
+
+
+console.log(evaluate(tokeniser("-+-3")));        // 3
+console.log(evaluate(tokeniser("--(3+2)")));     // 5
+
+console.log(evaluate(tokeniser("(1 + (2 * -3))")));
 
 // console.log(tokeniser("9)-3"));
 // console.log(tokeniser("-3 12"));
-// console.log(evaluate(tokeniser("-(-3)")));
-// console.log( evaluate(tokeniser("-2 -(-5)")));
+console.log(evaluate(tokeniser("-(-3)")));
+console.log( evaluate(tokeniser("-2 -(-5)")));
 
-// console.log(tokeniser("-2 -(-5)"));
 // console.log(tokeniser("-(3+2)"));
 // console.log(tokeniser("  -   3"));
 // console.log(evaluate(tokeniser("4 * -2")));
