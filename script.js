@@ -203,21 +203,24 @@ function evaluate(tokens) {
   return res[0];
 }
 
-console.log(process.argv)
+// console.log(process.argv)
 
-if (process.argv.length <3) {
-  throw new Error('Please enter more arguments when calling the script usage:\nnode script.js "Math Expression..." ...');
-} else {
-  let expression = []
-  process.argv.slice(2).forEach(function(arg, i) {
-    expression.push(arg)
-  });
-  let tokens = tokeniser(expression.join(''))
+if(process.argv[1].endsWith('script.js')){
 
-  if(parser(tokens)){
-    console.log(`the result is: ${evaluate(tokens)}`)
-  }else{
-    throw new Error('Invalid expression please enter a valid expression')
+  if (process.argv.length <3) {
+    throw new Error('Please enter more arguments when calling the script usage:\nnode script.js "Math Expression..." ...');
+  } else {
+    let expression = []
+    process.argv.slice(2).forEach(function(arg, i) {
+      expression.push(arg)
+    });
+    let tokens = tokeniser(expression.join(''))
+    
+    if(parser(tokens)){
+      console.log(`the result is: ${evaluate(tokens)}`)
+    }else{
+      throw new Error('Invalid expression please enter a valid expression')
+    }
   }
 }
 
