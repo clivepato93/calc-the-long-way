@@ -16,10 +16,10 @@ tokenising > parsing through the tokens > evaluate the result.
 
 Example:
 
-Input "(1 + (2 * -3))"
+Input "(1 + (2 * -3))"  
 Tokeniser process converts the expression to  
-["(", 1, "+", "(", 2, "*", -1, "*", 3, ")", ")"]
-The parser returns true as the expresssion is valid
+["(", 1, "+", "(", 2, "*", -1, "*", 3, ")", ")"]  
+The parser returns true as the expresssion is valid  
 Evaluate return -5
 
 ------------------------------------------------------------------------
