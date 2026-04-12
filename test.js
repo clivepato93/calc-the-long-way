@@ -1,4 +1,6 @@
-import { tokeniser, parser, evaluate } from "./script.js";
+import { tokeniser} from "./generateTokens.js";
+import {parser } from "./parser.js";
+import { evaluate } from "./eval.js";
 
 // tokeniser
 try {

@@ -1,4 +1,4 @@
-function generateToken(currToken) {
+ function generateToken(currToken) {
   let negativeOp = 0;
   let finalOutput = [];
   let tokens = [];
@@ -19,7 +19,7 @@ function generateToken(currToken) {
   return tokens;
 }
 
-function tokeniser(expr) {
+export function tokeniser(expr) {
   let tokens = [];
   let currToken = [];
   let unary = true;

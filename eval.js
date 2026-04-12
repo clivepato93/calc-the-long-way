@@ -1,5 +1,5 @@
-import { tokeniser } from "./generateTokens";
-import { parser } from "./parser";
+import { tokeniser } from "./generateTokens.js";
+import { parser } from "./parser.js";
 
 
 
